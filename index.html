@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba Práctica de Contabilidad EBC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,700;0,900;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    
+    <div class="container">
+        <div class="header">
+            <img src="https://www.ebc.mx/wp-content/uploads/2024/10/ebc_logo-1.svg" alt="Logo EBC" class="logo">
+            <h2>EJERCITADOR DE CONTABILIDAD</h2>
+        </div>
+        <div class="instructions-container">
+    <button id="toggleInstructionsBtn" class="action-button">Mostrar Instrucciones</button>
+    <div id="instructionsContent" class="instructions hidden">
+        <p>La Comercializadora Central, registra las siguientes operaciones de su primer mes.</p> 
+        <P>La cuenta a afectar es <strong>Bancos</strong>.</p>
+            <ul>
+                <li>El saldo inicial es de <strong>$850,000</strong></li>
+                <li>Se pagó al proveedor INMOBILARIA SA la cantidad de <strong>$17,700</strong></li>
+                <li>Se vendió una máquina envasadora por la cantidad de <strong>$120,000</strong></li>
+                <li>Se entregó viáticos por viaje a Monterrey al vendedor Javier Barrera por <strong>$70,000</strong></li>
+                <li>El cliente ZAZA SA pagó por un servicio la cantidad de <strong>$25,000</strong></li>
+            </ul>
+        </div>
+    </div>
+
+        <table class="accounting-table">
+            <thead>
+                <tr>
+                    <th style="width: 50%;">CONCEPTO</th>
+                    <th style="width: 25%;">CARGO</th>
+                    <th style="width: 25%;">ABONO</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Bancos (Saldo Inicial)</td>
+                    <td><input type="number" class="transaction-input" id="cargo_bancos" placeholder="0.00"></td>
+                    <td><input type="number" class="transaction-input" id="abono_bancos" placeholder="0.00"></td>
+                </tr>
+                <tr>
+                    <td>Pago proveedor Inmobiliaria SA ($17,700)</td>
+                    <td><input type="number" class="transaction-input" id="cargo_prov" placeholder="0.00"></td>
+                    <td><input type="number" class="transaction-input" id="abono_prov" placeholder="0.00"></td>
+                </tr>
+                <tr>
+                    <td>Cobro cheque por máquina envasadora ($120,000)</td>
+                    <td><input type="number" class="transaction-input" id="cargo_maq" placeholder="0.00"></td>
+                    <td><input type="number" class="transaction-input" id="abono_maq" placeholder="0.00"></td>
+                </tr>
+                <tr>
+                    <td>Pago de Zaza SA ($25,000)</td>
+                    <td><input type="number" class="transaction-input" id="cargo_zaza" placeholder="0.00"></td>
+                    <td><input type="number" class="transaction-input" id="abono_zaza" placeholder="0.00"></td>
+                </tr>
+                <tr>
+                    <td>Viáticos a Monterrey ($70,000)</td>
+                    <td><input type="number" class="transaction-input" id="cargo_via" placeholder="0.00"></td>
+                    <td><input type="number" class="transaction-input" id="abono_via" placeholder="0.00"></td>
+                </tr>
+                <tr class="totals-row">
+                    <td>TOTALES</td>
+                    <td id="total_cargo" class="result-cell"></td>
+                    <td id="total_abono" class="result-cell"></td>
+                </tr>
+                <tr>
+                    <td class="final-balance-label">SALDO FINAL</td>
+                    <td colspan="2" id="saldo_final" class="result-cell final-balance-cell"></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div id="feedback-area"></div>
+            <div class="button-container">
+                <button id="revisarBtn" class="action-button">
+                    <i class="fa-solid fa-check"></i> Revisar
+                </button>
+                <button id="reiniciarBtn" class="action-button">
+                    <i class="fa-solid fa-arrow-rotate-right"></i> Reiniciar
+                </button>
+        </div>
+
+    <script>
+        // REFERENCIAS
+        const revisarBtn = document.getElementById('revisarBtn');
+        const reiniciarBtn = document.getElementById('reiniciarBtn');
+        const feedbackArea = document.getElementById('feedback-area');
+        const inputs = document.querySelectorAll('.transaction-input');
+        const initialBalanceEl = document.getElementById('initial-balance');
+
+        const totalCargoCell = document.getElementById('total_cargo');
+        const totalAbonoCell = document.getElementById('total_abono');
+        const saldoFinalCell = document.getElementById('saldo_final');
+        // LOGICA DEL BOTON DE INSTRUCCIONES
+        const toggleBtn = document.getElementById('toggleInstructionsBtn');
+        const instructionsContent = document.getElementById('instructionsContent');
+
+        toggleBtn.addEventListener('click', () => {
+            instructionsContent.classList.toggle('hidden');
+
+            if (instructionsContent.classList.contains('hidden')) {
+                toggleBtn.textContent = 'Mostrar Instrucciones';
+            } else {
+                toggleBtn.textContent = 'Ocultar Instrucciones';
+            }
+        });
+
+        // DEF DE RESPUESTAS CORRECTAS
+        const answerKey = {
+            bancos: { cargo: 850000, abono: 0 },
+            prov: { cargo: 0, abono: 17700 },
+            maq:  { cargo: 120000, abono: 0 },
+            zaza: { cargo: 25000, abono: 0 },
+            via:  { cargo: 0, abono: 70000 }
+        };
+        const totalPossibleScore = Object.keys(answerKey).length;
+
+        // FUNCIONES AUXILIARES
+        const getValue = id => parseFloat(document.getElementById(id).value) || 0;
+        const formatCurrency = num => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(num);
+
+        // REVISION
+        function checkAnswers() {
+            let score = 0;
+
+            // LIMPIAR VALIDACIONES ANTERIORES
+            inputs.forEach(input => input.classList.remove('input-correct', 'input-incorrect'));
+            totalCargoCell.classList.remove('active');
+            totalAbonoCell.classList.remove('active');
+            saldoFinalCell.classList.remove('active');
+            
+            for (const key in answerKey) {
+                const cargoInputEl = document.getElementById(`cargo_${key}`);
+                const abonoInputEl = document.getElementById(`abono_${key}`);
+                const userCargo = getValue(`cargo_${key}`);
+                const userAbono = getValue(`abono_${key}`);
+
+                const isCargoCorrect = userCargo === answerKey[key].cargo;
+                const isAbonoCorrect = userAbono === answerKey[key].abono;
+
+                cargoInputEl.classList.add(isCargoCorrect ? 'input-correct' : 'input-incorrect');
+                abonoInputEl.classList.add(isAbonoCorrect ? 'input-correct' : 'input-incorrect');
+
+                if (isCargoCorrect && isAbonoCorrect) {
+                    score++;
+                }
+            }
+
+            const totalCargo = getValue('cargo_bancos') + getValue('cargo_prov') + getValue('cargo_maq') + getValue('cargo_zaza') + getValue('cargo_via');
+            const totalAbono = getValue('abono_prov') + getValue('abono_maq') + getValue('abono_zaza') + getValue('abono_via');
+            const saldoFinal = totalCargo - totalAbono;
+
+            // MUESTRA RESULTADOS 
+            totalCargoCell.innerText = formatCurrency(totalCargo);
+            totalAbonoCell.innerText = formatCurrency(totalAbono);
+            saldoFinalCell.innerText = formatCurrency(saldoFinal);
+
+            totalCargoCell.classList.add('active');
+            totalAbonoCell.classList.add('active');
+            saldoFinalCell.classList.add('active');
+            
+            feedbackArea.className = '';
+            if (score === totalPossibleScore) {
+                feedbackArea.textContent = `¡Excelente! Obtuviste ${score} de ${totalPossibleScore} aciertos. ✨`;
+                feedbackArea.classList.add('feedback-correct');
+            } else {
+                feedbackArea.textContent = `Sigue intentando. Obtuviste ${score} de ${totalPossibleScore} aciertos. Revisa las celdas en rojo.`;
+                feedbackArea.classList.add('feedback-incorrect');
+            }
+        }
+        
+        function resetExercise() {
+            inputs.forEach(input => {
+                input.value = '';
+                input.classList.remove('input-correct', 'input-incorrect');
+            });
+
+            totalCargoCell.innerText = '';
+            totalAbonoCell.innerText = '';
+            saldoFinalCell.innerText = '';
+
+            totalCargoCell.classList.remove('active');
+            totalAbonoCell.classList.remove('active');
+            saldoFinalCell.classList.remove('active');
+            
+            feedbackArea.textContent = '';
+            feedbackArea.className = '';
+        }
+
+        // EVENTS
+        revisarBtn.addEventListener('click', checkAnswers);
+        reiniciarBtn.addEventListener('click', resetExercise);
+
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                input.classList.remove('input-correct', 'input-incorrect');
+            });
+        });
+
+        // CLEAN POR REFRESH
+        document.addEventListener('DOMContentLoaded', resetExercise);
+
+    </script>
+</body>
+</html>
