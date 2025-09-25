@@ -103,3 +103,14 @@ const revisarBtn = document.getElementById('revisarBtn');
         // CLEAN POR REFRESH 
         document.addEventListener('DOMContentLoaded', resetExercise);
 
+        const toggleBtn = document.getElementById('toggleInstructionsBtn');
+        const instructionsContent = document.getElementById('instructionsContent');
+                toggleBtn.addEventListener('click', () => {
+                    instructionsContent.classList.toggle('hidden');
+                    if (instructionsContent.classList.contains('hidden')) {
+                        toggleBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> Mostrar Instrucciones';
+                    } else {
+                        toggleBtn.innerHTML = '<i class="fa-solid fa-chevron-up"></i> Ocultar Instrucciones';
+                    }
+                });
+
