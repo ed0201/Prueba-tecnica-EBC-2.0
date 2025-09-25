@@ -241,4 +241,19 @@
         }
         #reiniciarBtn:hover {
             background-color: #696f73;
+
         }
+@media (max-width: 768px) {
+
+
+    .header {
+        flex-direction: column; 
+        gap: 10px;            
+    }
+
+    .header .logo {
+        position: static; 
+    }
+
+   
+}
