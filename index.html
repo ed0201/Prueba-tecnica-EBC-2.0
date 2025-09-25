@@ -43,13 +43,12 @@
             <tbody>
                 <tr>
                     <td>Bancos (Saldo Inicial)</td>
-                    <td><input type="number" class="transaction-input" id="cargo_bancos" placeholder="0.00"></td>
-                    <td><input type="number" class="transaction-input" id="abono_bancos" placeholder="0.00"></td>
-                </tr>
+                     <td data-label="Cargo:"><input type="text" inputmode="decimal" class="transaction-input" id="cargo_prov" placeholder="0"></td>
+                     <td data-label="Abono:"><input type="text" inputmode="decimal" class="transaction-input" id="abono_prov" placeholder="0"></td> </tr>
                 <tr>
                     <td>Pago proveedor Inmobiliaria SA ($17,700)</td>
-                    <td><input type="number" class="transaction-input" id="cargo_prov" placeholder="0.00"></td>
-                    <td><input type="number" class="transaction-input" id="abono_prov" placeholder="0.00"></td>
+                    <td data-label="Cargo:"><input type="text" inputmode="decimal" class="transaction-input" id="cargo_maq" placeholder="0"></td>
+                    <td data-label="Abono:"><input type="text" inputmode="decimal" class="transaction-input" id="abono_maq" placeholder="0"></td>
                 </tr>
                 <tr>
                     <td>Cobro cheque por máquina envasadora ($120,000)</td>
@@ -91,4 +90,5 @@
    </body>
 
 </html>
+
 
